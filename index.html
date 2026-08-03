@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuadro de Pagos 2025</title>
+<style>
+:root{color-scheme:light;
+ --bg:#f4f6fb; --card:#ffffff; --ink:#1a2233; --muted:#6b7688; --line:#e6eaf2;
+ --blue:#2c5cff; --blue-d:#1e3fb0; --green:#0f9d58; --green-bg:#e7f6ee;
+ --amber:#b9770a; --amber-bg:#fdf3e0; --red:#d13438; --red-bg:#fdecec; --gray-bg:#eef1f6;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.4}
+.wrap{max-width:1080px;margin:0 auto;padding:18px 16px 60px}
+h1{font-size:20px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:9px 18px;border:1px solid var(--line);background:var(--card);border-radius:10px;cursor:pointer;font-weight:600;color:var(--muted)}
+.tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .lab{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);font-weight:600}
+.kpi .val{font-size:18px;font-weight:700;margin-top:4px}
+.kpi.alert{background:var(--red-bg);border-color:#f3c7c7}
+.kpi.alert .val{color:var(--red)}
+.kpi.ok .val{color:var(--green)}
+.kpi.next{background:var(--amber-bg);border-color:#f0dcb4}
+.banner{background:#eaf0ff;border:1px solid #cddaff;color:var(--blue-d);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.banner b{color:var(--ink)}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:13px;color:var(--ink)}
+.btn:hover{background:#f0f3fa}
+.btn.blue{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn.blue:hover{background:var(--blue-d)}
+.btn.sm{padding:4px 9px;font-size:12px}
+.loan{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.loan-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.loan-h .t{font-size:15px;font-weight:700}
+.loan-h .meta{color:var(--muted);font-size:12px;margin-top:2px}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:.03em;margin-left:6px;vertical-align:middle}
+.tag.hist{background:var(--gray-bg);color:var(--muted)}
+.tag.due{background:var(--red-bg);color:var(--red)}
+.prog{font-size:12px;color:var(--muted);text-align:right}
+.prog b{color:var(--ink)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px 10px;text-align:left;font-size:13px;border-bottom:1px solid var(--line)}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);font-weight:600;background:#fafbfe}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.paid td{background:var(--green-bg)}
+tr.vencido td:first-child{box-shadow:inset 3px 0 0 var(--red)}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.pill.pagado{background:var(--green-bg);color:var(--green)}
+.pill.vencido{background:var(--red-bg);color:var(--red)}
+.pill.proximo{background:var(--amber-bg);color:var(--amber)}
+.pill.pendiente{background:var(--gray-bg);color:var(--muted)}
+.reg input{border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;width:120px}
+.reg{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.undo{color:var(--muted);cursor:pointer;font-size:12px;text-decoration:underline;margin-left:8px}
+.small{font-size:11px;color:var(--muted)}
+.foot{color:var(--muted);font-size:12px;margin-top:22px;text-align:center}
+#gate{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+#gate .box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px;max-width:340px;width:100%;text-align:center}
+#gate input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;margin:12px 0}
+#status{position:fixed;bottom:14px;right:14px;background:#111a2e;color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;opacity:0;transition:opacity .3s;z-index:60}
+#status.show{opacity:.92}
+@media(max-width:640px){.hide-sm{display:none}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- ====== CONFIGURA ESTAS 3 LÍNEAS ====== -->
+<script>
+const APP_PASSWORD  = "1020";                      // <-- tu contraseña (cámbiala si quieres)
+const SUPABASE_URL  = "https://nopfmljryhhjispoukbc.supabase.co";
+const SUPABASE_KEY  = "sb_publishable_hD7nOJwuAuceBX3A2mu4kA_SljIMd7V";
+</script>
+<!-- ======================================= -->
+
+<div id="gate">
+  <div class="box">
+    <div style="font-size:34px">🔒</div>
+    <h1 style="font-size:18px">Cuadro de Pagos 2025</h1>
+    <div class="small">Ingresa la contraseña para continuar</div>
+    <input type="password" id="pw" placeholder="Contraseña" autofocus>
+    <button class="btn blue" id="enter" style="width:100%">Entrar</button>
+    <div id="pwErr" class="small" style="color:var(--red);height:16px"></div>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+  <h1>Cuadro de Pagos 2025</h1>
+  <div class="sub">Guardado en la nube (Supabase) — hoy es <span id="today"></span>. Cambios sincronizados en todos tus dispositivos.</div>
+  <div class="tabs" id="tabs"></div>
+
+  <div class="banner">
+    <div>💡 El <b>saldo vencido acumulado</b> suma toda cuota no pagada cuya fecha ya pasó — y crece cada día que no la registres.</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn sm" id="markPast">Marcar vencidas ✓</button>
+      <button class="btn sm" id="restoreBtn">⬆ Importar backup</button>
+    </div>
+  </div>
+
+  <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(20,28,45,.45);z-index:50;align-items:center;justify-content:center;padding:20px">
+    <div style="background:#fff;border-radius:14px;max-width:560px;width:100%;padding:18px">
+      <div style="font-weight:700;font-size:16px;margin-bottom:6px">Importar backup a la nube</div>
+      <div class="small" style="margin-bottom:10px">Pega aquí el texto del backup que exportaste del dashboard anterior y presiona Subir. Se guardará en Supabase.</div>
+      <textarea id="ovText" style="width:100%;height:180px;border:1px solid var(--line);border-radius:8px;padding:8px;font-family:monospace;font-size:12px"></textarea>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+        <button class="btn sm" id="ovClose">Cerrar</button>
+        <button class="btn sm blue" id="ovAction">Subir a Supabase</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+  <div id="loans"></div>
+  <div class="foot">Cuadro Pagos 2025 · datos guardados en Supabase.</div>
+</div>
+<div id="status"></div>
+
+<script>
+const DATA = {"Original": [{"name": "Préstamo 12M", "principal": 12000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-30", "amount": 840000}, {"date": "2025-11-15", "amount": 840000}, {"date": "2025-12-31", "amount": 840000}, {"date": "2026-02-15", "amount": 840000}, {"date": "2026-04-02", "amount": 840000}, {"date": "2026-05-18", "amount": 840000}, {"date": "2026-07-03", "amount": 840000}, {"date": "2026-08-18", "amount": 840000}, {"date": "2026-10-03", "amount": 840000}, {"date": "2026-11-18", "amount": 840000}, {"date": "2027-01-03", "amount": 840000}, {"date": "2027-02-18", "amount": 840000}]}, {"name": "Histórico 10M", "principal": 10000000, "disb": "2023-11-16", "payments": [{"date": "2023-12-15", "amount": 200000}, {"date": "2024-01-15", "amount": 200000}, {"date": "2024-02-15", "amount": 200000}, {"date": "2024-03-15", "amount": 200000}, {"date": "2024-04-15", "amount": 200000}, {"date": "2024-05-15", "amount": 200000}, {"date": "2024-06-15", "amount": 200000}, {"date": "2024-07-15", "amount": 200000}, {"date": "2024-08-15", "amount": 200000}, {"date": "2024-09-15", "amount": 200000}, {"date": "2024-10-15", "amount": 200000}, {"date": "2024-11-15", "amount": 200000}, {"date": "2024-12-15", "amount": 200000}, {"date": "2025-01-15", "amount": 200000}]}, {"name": "Préstamo 7M", "principal": 7000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-30", "amount": 490000}, {"date": "2025-11-14", "amount": 490000}, {"date": "2025-12-29", "amount": 490000}, {"date": "2026-02-12", "amount": 490000}, {"date": "2026-03-29", "amount": 490000}, {"date": "2026-05-13", "amount": 490000}, {"date": "2026-06-27", "amount": 490000}, {"date": "2026-08-11", "amount": 490000}, {"date": "2026-09-25", "amount": 490000}, {"date": "2026-11-09", "amount": 490000}, {"date": "2026-12-24", "amount": 490000}, {"date": "2027-02-07", "amount": 490000}]}, {"name": "Histórico 8M", "principal": 8000000, "disb": "2024-02-15", "payments": [{"date": "2024-03-15", "amount": 160000}, {"date": "2024-04-15", "amount": 160000}, {"date": "2024-05-15", "amount": 160000}, {"date": "2024-06-15", "amount": 160000}, {"date": "2024-07-15", "amount": 160000}, {"date": "2024-08-15", "amount": 160000}, {"date": "2024-09-15", "amount": 160000}, {"date": "2024-10-15", "amount": 160000}, {"date": "2024-11-15", "amount": 160000}, {"date": "2024-12-15", "amount": 160000}, {"date": "2025-01-15", "amount": 160000}, {"date": "2025-02-15", "amount": 160000}, {"date": "2025-03-15", "amount": 160000}, {"date": "2025-04-15", "amount": 160000}]}, {"name": "Préstamo 55M", "principal": 55000000, "disb": "2025-08-26", "payments": [{"date": "2025-10-11", "amount": 3850000}, {"date": "2025-11-25", "amount": 3850000}, {"date": "2026-01-09", "amount": 3850000}, {"date": "2026-02-23", "amount": 3850000}, {"date": "2026-04-09", "amount": 3850000}, {"date": "2026-05-24", "amount": 3850000}, {"date": "2026-07-08", "amount": 3850000}, {"date": "2026-08-22", "amount": 3850000}, {"date": "2026-10-06", "amount": 3850000}, {"date": "2026-11-20", "amount": 3850000}, {"date": "2027-01-04", "amount": 3850000}, {"date": "2027-02-18", "amount": 3850000}]}, {"name": "Préstamo 30M", "principal": 30000000, "disb": "2026-05-06", "payments": [{"date": "2026-06-21", "amount": 1650000}, {"date": "2026-08-06", "amount": 1650000}, {"date": "2026-09-21", "amount": 1650000}, {"date": "2026-11-06", "amount": 1650000}, {"date": "2026-12-22", "amount": 1650000}, {"date": "2027-02-06", "amount": 1650000}, {"date": "2027-03-24", "amount": 1650000}, {"date": "2027-05-09", "amount": 1650000}, {"date": "2027-06-24", "amount": 1650000}, {"date": "2027-08-09", "amount": 1650000}, {"date": "2027-09-24", "amount": 1650000}, {"date": "2027-11-09", "amount": 1650000}]}], "Alejandro": [{"name": "Juan P", "principal": 12000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 360000}, {"date": "2025-11-13", "amount": 360000}, {"date": "2025-12-28", "amount": 360000}, {"date": "2026-02-11", "amount": 360000}, {"date": "2026-03-28", "amount": 360000}, {"date": "2026-05-12", "amount": 360000}]}, {"name": "Jorge", "principal": 7000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 210000}, {"date": "2025-11-13", "amount": 210000}, {"date": "2025-12-28", "amount": 210000}, {"date": "2026-02-11", "amount": 210000}, {"date": "2026-03-28", "amount": 210000}, {"date": "2026-05-12", "amount": 210000}]}, {"name": "Joaquis", "principal": 55000000, "disb": "2024-08-26", "payments": [{"date": "2024-10-10", "amount": 1650000}, {"date": "2024-11-24", "amount": 1650000}, {"date": "2025-01-08", "amount": 1650000}, {"date": "2025-02-22", "amount": 1650000}, {"date": "2025-04-08", "amount": 1650000}, {"date": "2025-05-23", "amount": 1650000}]}, {"name": "Tata", "principal": 55000000, "disb": "2025-08-26", "payments": [{"date": "2025-10-10", "amount": 275000}, {"date": "2025-11-24", "amount": 275000}, {"date": "2026-01-08", "amount": 275000}, {"date": "2026-02-22", "amount": 275000}, {"date": "2026-04-08", "amount": 275000}, {"date": "2026-05-23", "amount": 275000}, {"date": "2026-07-07", "amount": 275000}, {"date": "2026-08-21", "amount": 275000}, {"date": "2026-10-05", "amount": 275000}, {"date": "2026-11-19", "amount": 275000}, {"date": "2027-01-03", "amount": 275000}, {"date": "2027-02-17", "amount": 275000}]}, {"name": "Préstamo 30M", "principal": 30000000, "disb": "2026-05-06", "payments": [{"date": "2026-06-21", "amount": 1650000}, {"date": "2026-08-06", "amount": 1650000}, {"date": "2026-09-21", "amount": 1650000}, {"date": "2026-11-06", "amount": 1650000}, {"date": "2026-12-22", "amount": 1650000}, {"date": "2027-02-06", "amount": 1650000}, {"date": "2027-03-24", "amount": 1650000}, {"date": "2027-05-09", "amount": 1650000}, {"date": "2027-06-24", "amount": 1650000}, {"date": "2027-08-09", "amount": 1650000}, {"date": "2027-09-24", "amount": 1650000}, {"date": "2027-11-09", "amount": 1650000}]}], "Felipe": [{"name": "Préstamo 12M", "principal": 12000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-30", "amount": 480000}, {"date": "2025-11-15", "amount": 480000}, {"date": "2025-12-31", "amount": 480000}, {"date": "2026-02-15", "amount": 480000}, {"date": "2026-04-02", "amount": 480000}, {"date": "2026-05-18", "amount": 480000}, {"date": "2026-07-03", "amount": 480000}, {"date": "2026-08-18", "amount": 480000}, {"date": "2026-10-03", "amount": 480000}, {"date": "2026-11-18", "amount": 480000}, {"date": "2027-01-03", "amount": 840000}, {"date": "2027-02-18", "amount": 840000}]}, {"name": "Préstamo 7M", "principal": 7000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-30", "amount": 280000}, {"date": "2025-11-14", "amount": 280000}, {"date": "2025-12-29", "amount": 280000}, {"date": "2026-02-12", "amount": 280000}, {"date": "2026-03-29", "amount": 280000}, {"date": "2026-05-13", "amount": 280000}, {"date": "2026-06-27", "amount": 280000}, {"date": "2027-02-07", "amount": 210000}]}, {"name": "Préstamo 55M", "principal": 55000000, "disb": "2025-08-26", "payments": [{"date": "2025-10-11", "amount": 1925000}, {"date": "2025-11-25", "amount": 1925000}, {"date": "2026-01-09", "amount": 1925000}, {"date": "2026-02-23", "amount": 1925000}, {"date": "2026-04-09", "amount": 1925000}, {"date": "2026-05-24", "amount": 1925000}, {"date": "2026-07-08", "amount": 1925000}, {"date": "2026-08-22", "amount": 1925000}, {"date": "2026-10-06", "amount": 1925000}, {"date": "2026-11-20", "amount": 1925000}, {"date": "2027-01-04", "amount": 3850000}, {"date": "2027-02-18", "amount": 3850000}]}, {"name": "Préstamo 30M", "principal": 30000000, "disb": "2026-05-06", "payments": [{"date": "2026-06-21", "amount": 1650000}, {"date": "2026-08-06", "amount": 1650000}, {"date": "2026-09-21", "amount": 1650000}, {"date": "2026-11-06", "amount": 1650000}, {"date": "2026-12-22", "amount": 1650000}, {"date": "2027-02-06", "amount": 1650000}, {"date": "2027-03-24", "amount": 1650000}, {"date": "2027-05-09", "amount": 1650000}, {"date": "2027-06-24", "amount": 1650000}, {"date": "2027-08-09", "amount": 1650000}, {"date": "2027-09-24", "amount": 1650000}, {"date": "2027-11-09", "amount": 1650000}]}]};
+let sb=null, state={}, current="Felipe";
+
+// ---------- gate ----------
+function unlock(){
+  const v=document.getElementById('pw').value;
+  if(v!==APP_PASSWORD){document.getElementById('pwErr').textContent='Contraseña incorrecta';return;}
+  document.getElementById('gate').style.display='none';
+  document.getElementById('app').style.display='block';
+  init();
+}
+document.getElementById('enter').onclick=unlock;
+document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')unlock();});
+
+// ---------- helpers ----------
+const fmt = n => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(Math.round(n));
+const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate());};
+function pdate(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function daysBetween(a,b){return Math.round((a-b)/86400000);}
+function fdate(s){const [y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
+function pid(tab,li,pi){return tab+'|'+li+'|'+pi;}
+function toast(msg){const s=document.getElementById('status');s.textContent=msg;s.classList.add('show');clearTimeout(s._t);s._t=setTimeout(()=>s.classList.remove('show'),1800);}
+
+// ---------- supabase ----------
+async function init(){
+  document.getElementById('today').textContent = today().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'});
+  if(SUPABASE_URL.startsWith('http')){
+    sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    await loadState();
+  }else{toast('⚠ Falta configurar Supabase');}
+  buildTabs();render();
+}
+async function loadState(){
+  state={};
+  const {data,error}=await sb.from('registro_pagos').select('*');
+  if(error){toast('Error al cargar: '+error.message);return;}
+  data.forEach(r=>{state[r.id]={paid:r.paid,fecha:r.fecha_pago,monto:r.monto};});
+}
+async function upsert(id,tab,loan,fp,vc,fecha,monto){
+  state[id]={paid:true,fecha,monto};render();
+  if(!sb)return;
+  const {error}=await sb.from('registro_pagos').upsert({id,tab,loan,fecha_programada:fp,valor_cuota:vc,paid:true,fecha_pago:fecha,monto,updated_at:new Date().toISOString()});
+  toast(error?('Error: '+error.message):'Guardado ✓');
+}
+async function removeRow(id){
+  delete state[id];render();
+  if(!sb)return;
+  const {error}=await sb.from('registro_pagos').delete().eq('id',id);
+  toast(error?('Error: '+error.message):'Deshecho');
+}
+
+// ---------- tabs ----------
+function buildTabs(){
+  const tabsEl=document.getElementById('tabs');tabsEl.innerHTML='';
+  Object.keys(DATA).forEach(tab=>{
+    const b=document.createElement('button');b.className='tab'+(tab===current?' active':'');b.textContent=tab;
+    b.onclick=()=>{current=tab;render();};tabsEl.appendChild(b);
+  });
+}
+function status(tab,li,pi,p){
+  const rec=state[pid(tab,li,pi)];
+  if(rec&&rec.paid) return 'pagado';
+  const diff=daysBetween(pdate(p.date),today());
+  if(diff<0) return 'vencido';
+  if(diff<=15) return 'proximo';
+  return 'pendiente';
+}
+
+function render(){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.textContent===current));
+  const loans=DATA[current];
+  let cap=0,prog=0,cobrado=0,vencidoAcum=0,vencidoN=0,next=null;
+  loans.forEach((l,li)=>{
+    if(typeof l.principal==='number') cap+=l.principal;
+    l.payments.forEach((p,pi)=>{
+      prog+=p.amount;const st=status(current,li,pi,p);const rec=state[pid(current,li,pi)];
+      if(st==='pagado'){cobrado+=(rec&&rec.monto!=null?Number(rec.monto):p.amount);}
+      else{const diff=daysBetween(pdate(p.date),today());
+        if(diff<0){vencidoAcum+=p.amount;vencidoN++;}
+        if(diff>=0 && (!next||pdate(p.date)<pdate(next.date))) next={date:p.date,amount:p.amount};}
+    });
+  });
+  const pendiente=prog-cobrado;
+  const kpis=[
+    ['Capital prestado',fmt(cap),''],['Interés total programado',fmt(prog),''],
+    ['Cobrado',fmt(cobrado),'ok'],['Pendiente por cobrar',fmt(pendiente),''],
+    ['Saldo vencido acumulado',fmt(vencidoAcum)+(vencidoN?` · ${vencidoN} cuota${vencidoN>1?'s':''}`:''),'alert'],
+    ['Próximo pago', next?`${fdate(next.date)} · ${fmt(next.amount)}`:'—','next'],
+  ];
+  document.getElementById('kpis').innerHTML=kpis.map(k=>`<div class="kpi ${k[2]}"><div class="lab">${k[0]}</div><div class="val">${k[1]}</div></div>`).join('');
+
+  const cont=document.getElementById('loans');cont.innerHTML='';
+  loans.forEach((l,li)=>{
+    const paidN=l.payments.filter((p,pi)=>status(current,li,pi,p)==='pagado').length;
+    const allPast=l.payments.every(p=>daysBetween(pdate(p.date),today())<0);
+    const hasDue=l.payments.some((p,pi)=>status(current,li,pi,p)==='vencido');
+    const card=document.createElement('div');card.className='loan';
+    let rows=l.payments.map((p,pi)=>{
+      const id=pid(current,li,pi);const rec=state[id]||{};const st=status(current,li,pi,p);
+      const diff=daysBetween(pdate(p.date),today());
+      let extra='';
+      if(st==='vencido') extra=`<span class="small"> · hace ${Math.abs(diff)} d</span>`;
+      else if(st==='proximo') extra=`<span class="small"> · en ${diff} d</span>`;
+      let last;
+      if(st==='pagado'){
+        last=`<td>${rec.fecha?fdate(rec.fecha):'—'}</td><td class="num">${rec.monto!=null?fmt(rec.monto):fmt(p.amount)}</td><td><span class="undo" data-undo="${id}">deshacer</span></td>`;
+      }else{
+        last=`<td colspan="2" class="reg" data-reg="${id}"></td><td><button class="btn sm blue" data-pay="${id}" data-amt="${p.amount}" data-li="${li}" data-pi="${pi}">Registrar</button></td>`;
+      }
+      return `<tr class="${st==='pagado'?'paid':''} ${st==='vencido'?'vencido':''}">
+        <td class="hide-sm">${pi+1}</td><td>${fdate(p.date)}${extra}</td>
+        <td class="num">${fmt(p.amount)}</td>
+        <td><span class="pill ${st}">${st.charAt(0).toUpperCase()+st.slice(1)}</span></td>${last}</tr>`;
+    }).join('');
+    card.innerHTML=`
+     <div class="loan-h">
+       <div><span class="t">${l.name}</span>
+         ${allPast?'<span class="tag hist">histórico</span>':''}${hasDue?'<span class="tag due">tiene vencidas</span>':''}
+         <div class="meta">Capital ${typeof l.principal==='number'?fmt(l.principal):l.principal} · desembolso ${l.disb?fdate(l.disb):'—'} · ${l.payments.length} cuotas</div>
+       </div>
+       <div class="prog"><b>${paidN}/${l.payments.length}</b> pagadas
+         <div><button class="btn sm" data-loanpast="${li}">Marcar vencidas ✓</button></div></div>
+     </div>
+     <table><thead><tr><th class="hide-sm">#</th><th>Fecha programada</th><th class="num">Valor cuota</th><th>Estado</th><th>Fecha pago real</th><th class="num">Monto recibido</th><th></th></tr></thead>
+       <tbody>${rows}</tbody></table>`;
+    cont.appendChild(card);
+  });
+  bind();
+}
+
+function bind(){
+  document.querySelectorAll('[data-pay]').forEach(b=>{
+    b.onclick=()=>{
+      const id=b.getAttribute('data-pay');const amt=b.getAttribute('data-amt');
+      const cell=document.querySelector(`[data-reg="${id}"]`);
+      cell.innerHTML=`<input type="date" id="f-${id}" value="${today().toISOString().slice(0,10)}"><input type="number" id="m-${id}" value="${amt}"> <button class="btn sm blue" data-save="${id}">Guardar</button>`;
+      document.querySelector(`[data-save="${id}"]`).onclick=()=>{
+        const f=document.getElementById('f-'+id).value;const m=document.getElementById('m-'+id).value;
+        const li=+b.getAttribute('data-li'),pi=+b.getAttribute('data-pi');const l=DATA[current][li];const p=l.payments[pi];
+        upsert(id,current,l.name,p.date,p.amount,f,m===''?null:Number(m));
+      };
+    };
+  });
+  document.querySelectorAll('[data-undo]').forEach(u=>{u.onclick=()=>removeRow(u.getAttribute('data-undo'));});
+  document.querySelectorAll('[data-loanpast]').forEach(b=>{b.onclick=()=>markPast(current,+b.getAttribute('data-loanpast'));});
+}
+
+async function markPast(tab,li){
+  const jobs=[];
+  DATA[tab][li].payments.forEach((p,pi)=>{
+    if(daysBetween(pdate(p.date),today())<0){const id=pid(tab,li,pi);
+      if(!state[id]||!state[id].paid){state[id]={paid:true,fecha:p.date,monto:p.amount};
+        jobs.push({id,tab,loan:DATA[tab][li].name,fecha_programada:p.date,valor_cuota:p.amount,paid:true,fecha_pago:p.date,monto:p.amount,updated_at:new Date().toISOString()});}}
+  });
+  render();
+  if(sb&&jobs.length){const {error}=await sb.from('registro_pagos').upsert(jobs);toast(error?('Error: '+error.message):jobs.length+' cuotas marcadas ✓');}
+}
+document.getElementById('markPast').onclick=()=>{
+  if(!confirm('¿Marcar como PAGADAS todas las cuotas vencidas de la pestaña '+current+'? Podrás deshacer cada una.'))return;
+  DATA[current].forEach((l,li)=>markPast(current,li));
+};
+
+// ---------- import backup ----------
+const ov=document.getElementById('overlay');
+document.getElementById('restoreBtn').onclick=()=>{ov.style.display='flex';};
+document.getElementById('ovClose').onclick=()=>ov.style.display='none';
+document.getElementById('ovAction').onclick=async ()=>{
+  let obj;try{obj=JSON.parse(document.getElementById('ovText').value);}catch(e){alert('Texto inválido');return;}
+  const rows=[];
+  Object.keys(obj).forEach(id=>{
+    const r=obj[id];if(!r||!r.paid)return;
+    const [tab,li,pi]=id.split('|');const l=DATA[tab]&&DATA[tab][+li];const p=l&&l.payments[+pi];
+    state[id]={paid:true,fecha:r.fecha||null,monto:r.monto!=null?Number(r.monto):(p?p.amount:null)};
+    rows.push({id,tab,loan:l?l.name:'',fecha_programada:p?p.date:null,valor_cuota:p?p.amount:null,paid:true,fecha_pago:r.fecha||null,monto:state[id].monto,updated_at:new Date().toISOString()});
+  });
+  if(sb&&rows.length){const {error}=await sb.from('registro_pagos').upsert(rows);toast(error?('Error: '+error.message):rows.length+' registros subidos ✓');}
+  ov.style.display='none';render();
+};
+</script>
+</body>
+</html>
