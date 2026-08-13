@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cuadro de Pagos 2025</title>
+<title>Cuadro de Pagos</title>
 <style>
 :root{color-scheme:light;
  --bg:#f4f6fb; --card:#ffffff; --ink:#1a2233; --muted:#6b7688; --line:#e6eaf2;
@@ -87,7 +87,7 @@ body.cliente #tabs,body.cliente #jarvis,body.cliente .banner{display:none!import
 <!-- ====== CONFIGURA ESTAS 3 LÍNEAS ====== -->
 <script>
 const APP_PASSWORD  = "1020";                      // <-- TU contraseña (acceso total)
-const CLIENTE_PASSWORD = "gomez2025";              // <-- contraseña de Alejandro Gómez (solo ve lo pendiente del cuadro Original)
+const CLIENTE_PASSWORD = "0000";              // <-- contraseña de Alejandro Gómez (solo ve lo pendiente del cuadro Original)
 const CLIENTE_NOMBRE   = "Alejandro Gómez";
 const SUPABASE_URL  = "https://nopfmljryhhjispoukbc.supabase.co";
 const SUPABASE_KEY  = "sb_publishable_hD7nOJwuAuceBX3A2mu4kA_SljIMd7V";
@@ -97,7 +97,7 @@ const SUPABASE_KEY  = "sb_publishable_hD7nOJwuAuceBX3A2mu4kA_SljIMd7V";
 <div id="gate">
   <div class="box">
     <div style="font-size:34px">🔒</div>
-    <h1 style="font-size:18px">Cuadro de Pagos 2025</h1>
+    <h1 style="font-size:18px">Cuadro de Pagos</h1>
     <div class="small">Ingresa la contraseña para continuar</div>
     <input type="password" id="pw" placeholder="Contraseña" autofocus>
     <button class="btn blue" id="enter" style="width:100%">Entrar</button>
@@ -107,7 +107,7 @@ const SUPABASE_KEY  = "sb_publishable_hD7nOJwuAuceBX3A2mu4kA_SljIMd7V";
 
 <div class="wrap" id="app" style="display:none">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-    <h1>Cuadro de Pagos 2025</h1>
+    <h1>Cuadro de Pagos</h1>
     <div id="todayBig" style="background:var(--ink);color:#fff;font-weight:700;padding:8px 14px;border-radius:10px;font-size:14px;white-space:nowrap">📅 Hoy: <span id="today"></span></div>
   </div>
   <div class="sub">Guardado en la nube (Supabase) · se actualiza solo cada día — los vencidos y el próximo pago se recalculan según la fecha de hoy. Sincronizado en todos tus dispositivos.</div>
@@ -145,7 +145,7 @@ const SUPABASE_KEY  = "sb_publishable_hD7nOJwuAuceBX3A2mu4kA_SljIMd7V";
 
   <div class="kpis" id="kpis"></div>
   <div id="loans"></div>
-  <div class="foot">Cuadro Pagos 2025 · datos guardados en Supabase.</div>
+  <div class="foot">Cuadro Pagos · datos guardados en Supabase.</div>
 </div>
 <div id="status"></div>
 
