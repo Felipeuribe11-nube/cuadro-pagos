@@ -74,6 +74,11 @@ tr.vencido td:first-child{box-shadow:inset 3px 0 0 var(--red)}
 @keyframes jpulse{0%,100%{opacity:1}50%{opacity:.45}}
 #jsend{background:#0f9d58;color:#fff}
 #jresp{margin-top:8px;font-size:13px;min-height:18px;line-height:1.35}
+.jnote{border:none;background:transparent;cursor:pointer;font-size:15px;padding:0 4px;opacity:.55;vertical-align:middle}
+.jnote:hover{opacity:1}
+.jnote.has{opacity:1;filter:drop-shadow(0 0 1px #b9770a)}
+.cnota{font-size:11.5px;color:#8a6d3b;background:var(--amber-bg);border-radius:6px;padding:2px 7px;margin-top:4px;display:inline-block;max-width:340px;white-space:normal}
+body.cliente #tabs,body.cliente #jarvis,body.cliente .banner{display:none!important}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -81,7 +86,9 @@ tr.vencido td:first-child{box-shadow:inset 3px 0 0 var(--red)}
 
 <!-- ====== CONFIGURA ESTAS 3 LÍNEAS ====== -->
 <script>
-const APP_PASSWORD  = "1020";                      // <-- tu contraseña (cámbiala si quieres)
+const APP_PASSWORD  = "1020";                      // <-- TU contraseña (acceso total)
+const CLIENTE_PASSWORD = "gomez2025";              // <-- contraseña de Alejandro Gómez (solo ve lo pendiente del cuadro Original)
+const CLIENTE_NOMBRE   = "Alejandro Gómez";
 const SUPABASE_URL  = "https://nopfmljryhhjispoukbc.supabase.co";
 const SUPABASE_KEY  = "sb_publishable_hD7nOJwuAuceBX3A2mu4kA_SljIMd7V";
 </script>
@@ -144,12 +151,14 @@ const SUPABASE_KEY  = "sb_publishable_hD7nOJwuAuceBX3A2mu4kA_SljIMd7V";
 
 <script>
 const DATA = {"Original": [{"name": "Préstamo 12M", "principal": 12000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 840000}, {"date": "2025-11-13", "amount": 840000}, {"date": "2025-12-28", "amount": 840000}, {"date": "2026-02-11", "amount": 840000}, {"date": "2026-03-28", "amount": 840000}, {"date": "2026-05-12", "amount": 840000}, {"date": "2026-06-26", "amount": 840000}, {"date": "2026-08-10", "amount": 840000}, {"date": "2026-09-24", "amount": 840000}, {"date": "2026-11-08", "amount": 840000}, {"date": "2026-12-23", "amount": 840000}]}, {"name": "Préstamo 7M", "principal": 7000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 490000}, {"date": "2025-11-13", "amount": 490000}, {"date": "2025-12-28", "amount": 490000}, {"date": "2026-02-11", "amount": 490000}, {"date": "2026-03-28", "amount": 490000}, {"date": "2026-05-12", "amount": 490000}, {"date": "2026-06-26", "amount": 490000}, {"date": "2026-08-10", "amount": 490000}, {"date": "2026-09-24", "amount": 490000}, {"date": "2026-11-08", "amount": 490000}, {"date": "2026-12-23", "amount": 490000}]}, {"name": "Préstamo 55M", "principal": 55000000, "disb": "2025-08-26", "payments": [{"date": "2025-10-10", "amount": 3850000}, {"date": "2025-11-24", "amount": 3850000}, {"date": "2026-01-08", "amount": 3850000}, {"date": "2026-02-22", "amount": 3850000}, {"date": "2026-04-08", "amount": 3850000}, {"date": "2026-05-23", "amount": 3850000}, {"date": "2026-07-07", "amount": 3850000}, {"date": "2026-08-21", "amount": 3850000}, {"date": "2026-10-05", "amount": 3850000}, {"date": "2026-11-19", "amount": 3850000}]}, {"name": "Préstamo 30M", "principal": 30000000, "disb": "2026-05-06", "payments": [{"date": "2026-06-21", "amount": 1650000}, {"date": "2026-08-06", "amount": 1650000}, {"date": "2026-09-21", "amount": 1650000}, {"date": "2026-11-06", "amount": 1650000}, {"date": "2026-12-22", "amount": 1650000}]}], "Alejandro": [{"name": "Juan P", "principal": 12000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 360000}, {"date": "2025-11-13", "amount": 360000}, {"date": "2025-12-28", "amount": 360000}, {"date": "2026-02-11", "amount": 360000}, {"date": "2026-03-28", "amount": 360000}, {"date": "2026-05-12", "amount": 360000}, {"date": "2026-06-26", "amount": 360000}, {"date": "2026-08-10", "amount": 360000}, {"date": "2026-09-24", "amount": 360000}, {"date": "2026-11-08", "amount": 360000}, {"date": "2026-12-23", "amount": 360000}]}, {"name": "Jorge", "principal": 7000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 210000}, {"date": "2025-11-13", "amount": 210000}, {"date": "2025-12-28", "amount": 210000}, {"date": "2026-02-11", "amount": 210000}, {"date": "2026-03-28", "amount": 210000}, {"date": "2026-05-12", "amount": 210000}, {"date": "2026-06-26", "amount": 210000}, {"date": "2026-08-10", "amount": 210000}, {"date": "2026-09-24", "amount": 210000}, {"date": "2026-11-08", "amount": 210000}, {"date": "2026-12-23", "amount": 210000}]}, {"name": "Joaquis", "principal": 55000000, "disb": "2025-08-26", "payments": [{"date": "2025-10-10", "amount": 1650000}, {"date": "2025-11-24", "amount": 1650000}, {"date": "2026-01-08", "amount": 1650000}, {"date": "2026-02-22", "amount": 1650000}, {"date": "2026-04-08", "amount": 1650000}, {"date": "2026-05-23", "amount": 1650000}, {"date": "2026-07-07", "amount": 1650000}, {"date": "2026-08-21", "amount": 1650000}, {"date": "2026-10-05", "amount": 1650000}, {"date": "2026-11-19", "amount": 1650000}]}, {"name": "Tata", "principal": 55000000, "disb": "2025-08-26", "payments": [{"date": "2025-10-10", "amount": 275000}, {"date": "2025-11-24", "amount": 275000}, {"date": "2026-01-08", "amount": 275000}, {"date": "2026-02-22", "amount": 275000}, {"date": "2026-04-08", "amount": 275000}, {"date": "2026-05-23", "amount": 275000}, {"date": "2026-07-07", "amount": 275000}, {"date": "2026-08-21", "amount": 275000}, {"date": "2026-10-05", "amount": 275000}, {"date": "2026-11-19", "amount": 275000}]}, {"name": "Préstamo 30M", "principal": 30000000, "disb": "2026-05-06", "payments": [{"date": "2026-06-21", "amount": 1650000}, {"date": "2026-08-06", "amount": 1650000}, {"date": "2026-09-21", "amount": 1650000}, {"date": "2026-11-06", "amount": 1650000}, {"date": "2026-12-22", "amount": 1650000}]}], "Felipe": [{"name": "Préstamo 12M", "principal": 12000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 480000}, {"date": "2025-11-13", "amount": 480000}, {"date": "2025-12-28", "amount": 480000}, {"date": "2026-02-11", "amount": 480000}, {"date": "2026-03-28", "amount": 480000}, {"date": "2026-05-12", "amount": 480000}, {"date": "2026-06-26", "amount": 480000}, {"date": "2026-08-10", "amount": 480000}, {"date": "2026-09-24", "amount": 480000}, {"date": "2026-11-08", "amount": 480000}, {"date": "2026-12-23", "amount": 840000}]}, {"name": "Préstamo 7M", "principal": 7000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 280000}, {"date": "2025-11-13", "amount": 280000}, {"date": "2025-12-28", "amount": 280000}, {"date": "2026-02-11", "amount": 280000}, {"date": "2026-03-28", "amount": 280000}, {"date": "2026-05-12", "amount": 280000}, {"date": "2026-06-26", "amount": 280000}, {"date": "2026-08-10", "amount": 210000}, {"date": "2026-09-24", "amount": 280000}, {"date": "2026-11-08", "amount": 280000}, {"date": "2026-12-23", "amount": 280000}]}, {"name": "Préstamo 55M", "principal": 55000000, "disb": "2025-08-26", "payments": [{"date": "2025-10-10", "amount": 1925000}, {"date": "2025-11-24", "amount": 1925000}, {"date": "2026-01-08", "amount": 1925000}, {"date": "2026-02-22", "amount": 1925000}, {"date": "2026-04-08", "amount": 1925000}, {"date": "2026-05-23", "amount": 1925000}, {"date": "2026-07-07", "amount": 1925000}, {"date": "2026-08-21", "amount": 1925000}, {"date": "2026-10-05", "amount": 1925000}, {"date": "2026-11-19", "amount": 1925000}]}, {"name": "Préstamo 30M", "principal": 30000000, "disb": "2026-05-06", "payments": [{"date": "2026-06-21", "amount": 1650000}, {"date": "2026-08-06", "amount": 1650000}, {"date": "2026-09-21", "amount": 1650000}, {"date": "2026-11-06", "amount": 1650000}, {"date": "2026-12-22", "amount": 1650000}]}]};
-let sb=null, state={}, current="Felipe";
+let sb=null, state={}, current="Felipe", role="full";
 
 // ---------- gate ----------
 function unlock(){
   const v=document.getElementById('pw').value;
-  if(v!==APP_PASSWORD){document.getElementById('pwErr').textContent='Contraseña incorrecta';return;}
+  if(v===APP_PASSWORD){role="full";}
+  else if(typeof CLIENTE_PASSWORD!=="undefined" && v===CLIENTE_PASSWORD){role="cliente";current="Original";document.body.classList.add("cliente");}
+  else {document.getElementById('pwErr').textContent='Contraseña incorrecta';return;}
   document.getElementById('gate').style.display='none';
   document.getElementById('app').style.display='block';
   init();
@@ -176,33 +185,89 @@ async function init(){
     sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
     await loadState();
   }else{toast('⚠ Falta configurar Supabase');}
-  buildTabs();render();
+  if(role==='cliente'){
+    document.querySelector('#app h1').textContent='Estado de tu préstamo';
+    document.querySelector('.sub').textContent='Hola '+CLIENTE_NOMBRE+' — esto es lo que tienes pendiente por pagar.';
+    renderClient();
+  }else{ buildTabs();render(); }
   // refresco automático: cada hora recalcula "hoy" y reordena vencidos/próximos
   let lastDay=today().toISOString().slice(0,10);
   setInterval(()=>{
     showToday();
     const d=today().toISOString().slice(0,10);
-    render();
+    if(role==='cliente')renderClient();else render();
     if(d!==lastDay){lastDay=d;toast('📅 Nuevo día: '+d);}
   }, 3600*1000);
+}
+function renderClient(){
+  const loans=DATA['Original'];
+  let pend=0,venc=0,vN=0,next=null;
+  loans.forEach((l,li)=>l.payments.forEach((p,pi)=>{
+    const st=status('Original',li,pi,p);
+    if(st==='pagado')return;
+    pend+=p.amount;
+    const diff=daysBetween(pdate(p.date),today());
+    if(diff<0){venc+=p.amount;vN++;}
+    if(diff>=0&&(!next||pdate(p.date)<pdate(next.date)))next={date:p.date,amount:p.amount};
+  }));
+  document.getElementById('kpis').innerHTML=[
+    ['Total pendiente',fmt(pend),''],
+    ['Vencido (atrasado)',fmt(venc)+(vN?' · '+vN+' cuota'+(vN>1?'s':''):''),'alert'],
+    ['Próximo pago',next?fdate(next.date)+' · '+fmt(next.amount):'—','next']
+  ].map(k=>`<div class="kpi ${k[2]}"><div class="lab">${k[0]}</div><div class="val">${k[1]}</div></div>`).join('');
+  const cont=document.getElementById('loans');cont.innerHTML='';
+  loans.forEach((l,li)=>{
+    const pend=l.payments.map((p,pi)=>({p,pi,st:status('Original',li,pi,p)})).filter(x=>x.st!=='pagado');
+    if(!pend.length)return;
+    const rows=pend.map(({p,pi,st})=>{
+      const diff=daysBetween(pdate(p.date),today());
+      let extra='';if(st==='vencido')extra=`<span class="small"> · hace ${Math.abs(diff)} d</span>`;else if(st==='proximo')extra=`<span class="small"> · en ${diff} d</span>`;
+      return `<tr class="${st==='vencido'?'vencido':''}"><td>${fdate(p.date)}${extra}</td><td class="num">${fmt(p.amount)}</td><td><span class="pill ${st}">${st.charAt(0).toUpperCase()+st.slice(1)}</span></td></tr>`;
+    }).join('');
+    const card=document.createElement('div');card.className='loan';
+    card.innerHTML=`<div class="loan-h"><div><span class="t">${l.name}</span><div class="meta">${pend.length} cuota(s) pendiente(s)</div></div></div>
+      <table><thead><tr><th>Fecha de pago</th><th class="num">Valor</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table>`;
+    cont.appendChild(card);
+  });
+  if(!cont.children.length)cont.innerHTML='<div class="loan" style="padding:18px;text-align:center;color:var(--green);font-weight:700">¡Estás al día! No tienes cuotas pendientes. ✅</div>';
 }
 async function loadState(){
   state={};
   const {data,error}=await sb.from('registro_pagos').select('*');
   if(error){toast('Error al cargar: '+error.message);return;}
-  data.forEach(r=>{state[r.id]={paid:r.paid,fecha:r.fecha_pago,monto:r.monto};});
+  data.forEach(r=>{state[r.id]={paid:r.paid,fecha:r.fecha_pago,monto:r.monto,nota:r.nota};});
 }
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 async function upsert(id,tab,loan,fp,vc,fecha,monto){
-  state[id]={paid:true,fecha,monto};render();
+  const nota=(state[id]&&state[id].nota)||null;
+  state[id]={paid:true,fecha,monto,nota};render();
   if(!sb)return;
-  const {error}=await sb.from('registro_pagos').upsert({id,tab,loan,fecha_programada:fp,valor_cuota:vc,paid:true,fecha_pago:fecha,monto,updated_at:new Date().toISOString()});
+  const {error}=await sb.from('registro_pagos').upsert({id,tab,loan,fecha_programada:fp,valor_cuota:vc,paid:true,fecha_pago:fecha,monto,nota,updated_at:new Date().toISOString()});
   toast(error?('Error: '+error.message):'Guardado ✓');
 }
 async function removeRow(id){
+  const rec=state[id];
+  if(rec&&rec.nota){ // conservar la nota; solo quitar el pago
+    state[id]={paid:false,fecha:null,monto:null,nota:rec.nota};render();
+    if(sb){const {error}=await sb.from('registro_pagos').update({paid:false,fecha_pago:null,monto:null,updated_at:new Date().toISOString()}).eq('id',id);toast(error?('Error: '+error.message):'Pago deshecho (nota conservada)');}
+    return;
+  }
   delete state[id];render();
   if(!sb)return;
   const {error}=await sb.from('registro_pagos').delete().eq('id',id);
   toast(error?('Error: '+error.message):'Deshecho');
+}
+async function saveNote(tab,li,pi){
+  const loan=DATA[tab][li],p=loan.payments[pi],id=pid(tab,li,pi);
+  const rec=state[id]||{};
+  const txt=prompt('Comentario para '+loan.name+' — cuota '+(pi+1)+' ('+fdate(p.date)+'):', rec.nota||'');
+  if(txt===null)return;
+  const nota=txt.trim();
+  const paid=!!rec.paid;
+  if(!nota&&!paid){delete state[id];render();if(sb)await sb.from('registro_pagos').delete().eq('id',id);toast('Nota eliminada');return;}
+  const fecha=rec.fecha||null, monto=(rec.monto!=null?rec.monto:null);
+  state[id]={paid,fecha,monto,nota:nota||null};render();
+  if(sb){const {error}=await sb.from('registro_pagos').upsert({id,tab,loan:loan.name,fecha_programada:p.date,valor_cuota:p.amount,paid,fecha_pago:fecha,monto,nota:nota||null,updated_at:new Date().toISOString()});toast(error?('Error: '+error.message):'Nota guardada ✓');}
 }
 
 // ---------- tabs ----------
@@ -257,14 +322,16 @@ function render(){
       let extra='';
       if(st==='vencido') extra=`<span class="small"> · hace ${Math.abs(diff)} d</span>`;
       else if(st==='proximo') extra=`<span class="small"> · en ${diff} d</span>`;
+      const noteBtn=`<button class="jnote${rec.nota?' has':''}" data-note="${id}" data-li="${li}" data-pi="${pi}" title="Comentario">💬</button>`;
       let last;
       if(st==='pagado'){
-        last=`<td>${rec.fecha?fdate(rec.fecha):'—'}</td><td class="num">${rec.monto!=null?fmt(rec.monto):fmt(p.amount)}</td><td><span class="undo" data-undo="${id}">deshacer</span></td>`;
+        last=`<td>${rec.fecha?fdate(rec.fecha):'—'}</td><td class="num">${rec.monto!=null?fmt(rec.monto):fmt(p.amount)}</td><td><span class="undo" data-undo="${id}">deshacer</span> ${noteBtn}</td>`;
       }else{
-        last=`<td colspan="2" class="reg" data-reg="${id}"></td><td><button class="btn sm blue" data-pay="${id}" data-amt="${p.amount}" data-li="${li}" data-pi="${pi}">Registrar</button></td>`;
+        last=`<td colspan="2" class="reg" data-reg="${id}"></td><td><button class="btn sm blue" data-pay="${id}" data-amt="${p.amount}" data-li="${li}" data-pi="${pi}">Registrar</button> ${noteBtn}</td>`;
       }
+      const notaHTML=rec.nota?`<div class="cnota">💬 ${esc(rec.nota)}</div>`:'';
       return `<tr class="${st==='pagado'?'paid':''} ${st==='vencido'?'vencido':''}">
-        <td class="hide-sm">${pi+1}</td><td>${fdate(p.date)}${extra}</td>
+        <td class="hide-sm">${pi+1}</td><td>${fdate(p.date)}${extra}${notaHTML}</td>
         <td class="num">${fmt(p.amount)}</td>
         <td><span class="pill ${st}">${st.charAt(0).toUpperCase()+st.slice(1)}</span></td>${last}</tr>`;
     }).join('');
@@ -298,6 +365,7 @@ function bind(){
     };
   });
   document.querySelectorAll('[data-undo]').forEach(u=>{u.onclick=()=>removeRow(u.getAttribute('data-undo'));});
+  document.querySelectorAll('[data-note]').forEach(b=>{b.onclick=()=>saveNote(current,+b.getAttribute('data-li'),+b.getAttribute('data-pi'));});
   document.querySelectorAll('[data-loanpast]').forEach(b=>{b.onclick=()=>markPast(current,+b.getAttribute('data-loanpast'));});
 }
 
@@ -363,6 +431,22 @@ document.getElementById('ovAction').onclick=async ()=>{
     const allTabs=/(en todas|las tres|las 3|todas las pesta)/.test(q);
     const undo=/(quita|despag|desmarca|pendiente|anula|borra el pago|desmarcar)/.test(q);
     const wantPay=/(pag|abon|cancel|recib|marca|listo|ya me)/.test(q)&&!undo;
+    // comentario / nota
+    if(/(\bnota\b|coment|anota|apunta)/.test(q)){
+      const ci=raw.indexOf(':');
+      const head=ci>=0?norm(raw.slice(0,ci)):q;
+      const texto=ci>=0?raw.slice(ci+1).trim():'';
+      const li=findLoan(tab,head);
+      let num=null;const mn=head.match(/cuota\s*#?\s*(\d+)/)||head.match(/\bla\s+(\d+)\b/)||head.match(/#\s*(\d+)/);if(mn)num=parseInt(mn[1]);if(num==null)for(const w in ORD)if(head.indexOf(w)>=0){num=ORD[w];break;}
+      if(li<0){jsay('¿En cuál préstamo? Ej: "nota cuota 3 de Tata: llamó y pidió plazo".',false);return;}
+      const loan=DATA[tab][li];
+      if(!num||num<1||num>loan.payments.length){jsay('Dime el número de cuota (1 a '+loan.payments.length+') para la nota.',false);return;}
+      if(!texto){jsay('Escribe la nota después de dos puntos. Ej: "nota cuota '+num+' de '+loan.name+': ...".',false);return;}
+      const pi=num-1,p=loan.payments[pi],id=pid(tab,li,pi),rec=state[id]||{},paid=!!rec.paid;
+      state[id]={paid,fecha:rec.fecha||null,monto:rec.monto!=null?rec.monto:null,nota:texto};current=tab;render();
+      if(sb)await sb.from('registro_pagos').upsert({id,tab,loan:loan.name,fecha_programada:p.date,valor_cuota:p.amount,paid,fecha_pago:rec.fecha||null,monto:rec.monto!=null?rec.monto:null,nota:texto,updated_at:new Date().toISOString()});
+      jsay('Nota guardada en la cuota '+num+' de '+loan.name+': '+texto);return;
+    }
     // marcar todas las vencidas del tab
     if(/vencid/.test(q)&&/todas/.test(q)&&!/cuota/.test(q)){
       for(let i=0;i<DATA[tab].length;i++)await markPast(tab,i);
