@@ -187,7 +187,7 @@ async function init(){
   }else{toast('⚠ Falta configurar Supabase');}
   if(role==='cliente'){
     document.querySelector('#app h1').textContent='Estado de tu préstamo';
-    document.querySelector('.sub').textContent='Hola '+CLIENTE_NOMBRE+' — esto es lo que tienes pendiente por pagar.';
+    document.querySelector('.sub').textContent='Hola '+CLIENTE_NOMBRE+' — esto es lo vencido y lo próximo a vencer (dentro de 15 días).';
     renderClient();
   }else{ buildTabs();render(); }
   // refresco automático: cada hora recalcula "hoy" y reordena vencidos/próximos
@@ -204,20 +204,20 @@ function renderClient(){
   let pend=0,venc=0,vN=0,next=null;
   loans.forEach((l,li)=>l.payments.forEach((p,pi)=>{
     const st=status('Original',li,pi,p);
-    if(st==='pagado')return;
+    if(st!=='vencido'&&st!=='proximo')return;
     pend+=p.amount;
     const diff=daysBetween(pdate(p.date),today());
     if(diff<0){venc+=p.amount;vN++;}
     if(diff>=0&&(!next||pdate(p.date)<pdate(next.date)))next={date:p.date,amount:p.amount};
   }));
   document.getElementById('kpis').innerHTML=[
-    ['Total pendiente',fmt(pend),''],
+    ['A pagar ahora (vencido + próximo)',fmt(pend),''],
     ['Vencido (atrasado)',fmt(venc)+(vN?' · '+vN+' cuota'+(vN>1?'s':''):''),'alert'],
     ['Próximo pago',next?fdate(next.date)+' · '+fmt(next.amount):'—','next']
   ].map(k=>`<div class="kpi ${k[2]}"><div class="lab">${k[0]}</div><div class="val">${k[1]}</div></div>`).join('');
   const cont=document.getElementById('loans');cont.innerHTML='';
   loans.forEach((l,li)=>{
-    const pend=l.payments.map((p,pi)=>({p,pi,st:status('Original',li,pi,p)})).filter(x=>x.st!=='pagado');
+    const pend=l.payments.map((p,pi)=>({p,pi,st:status('Original',li,pi,p)})).filter(x=>x.st==='vencido'||x.st==='proximo');
     if(!pend.length)return;
     const rows=pend.map(({p,pi,st})=>{
       const diff=daysBetween(pdate(p.date),today());
@@ -229,7 +229,7 @@ function renderClient(){
       <table><thead><tr><th>Fecha de pago</th><th class="num">Valor</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table>`;
     cont.appendChild(card);
   });
-  if(!cont.children.length)cont.innerHTML='<div class="loan" style="padding:18px;text-align:center;color:var(--green);font-weight:700">¡Estás al día! No tienes cuotas pendientes. ✅</div>';
+  if(!cont.children.length)cont.innerHTML='<div class="loan" style="padding:18px;text-align:center;color:var(--green);font-weight:700">¡Estás al día! No tienes cuotas vencidas ni próximas a vencer. ✅</div>';
 }
 async function loadState(){
   state={};
