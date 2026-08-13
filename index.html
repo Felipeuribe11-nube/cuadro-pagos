@@ -64,6 +64,16 @@ tr.vencido td:first-child{box-shadow:inset 3px 0 0 var(--red)}
 #status{position:fixed;bottom:14px;right:14px;background:#111a2e;color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;opacity:0;transition:opacity .3s;z-index:60}
 #status.show{opacity:.92}
 @media(max-width:640px){.hide-sm{display:none}}
+#jarvis{background:linear-gradient(135deg,#1e3fb0,#2c5cff);color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px}
+#jarvis .jhead{display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:8px;font-size:15px}
+#jarvis .jrow{display:flex;gap:8px}
+#jarvis input{flex:1;border:none;border-radius:8px;padding:10px 12px;font-size:14px;color:var(--ink)}
+#jarvis button{border:none;border-radius:8px;padding:0 14px;font-weight:700;cursor:pointer;font-size:14px}
+#jmic{background:#fff;color:#2c5cff;font-size:18px;min-width:44px}
+#jmic.rec{background:#ff4d4f;color:#fff;animation:jpulse 1s infinite}
+@keyframes jpulse{0%,100%{opacity:1}50%{opacity:.45}}
+#jsend{background:#0f9d58;color:#fff}
+#jresp{margin-top:8px;font-size:13px;min-height:18px;line-height:1.35}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -116,6 +126,16 @@ const SUPABASE_KEY  = "sb_publishable_hD7nOJwuAuceBX3A2mu4kA_SljIMd7V";
     </div>
   </div>
 
+  <div id="jarvis">
+    <div class="jhead">🤖 Jarvis <span style="font-weight:400;opacity:.85;font-size:12px">— dime qué cuota marcar, por texto o voz</span></div>
+    <div class="jrow">
+      <input id="jinput" placeholder="Ej: marca la cuota 3 de Juan P como pagada">
+      <button id="jmic" title="Hablar">🎤</button>
+      <button id="jsend">Enviar</button>
+    </div>
+    <div id="jresp"></div>
+  </div>
+
   <div class="kpis" id="kpis"></div>
   <div id="loans"></div>
   <div class="foot">Cuadro Pagos 2025 · datos guardados en Supabase.</div>
@@ -123,7 +143,7 @@ const SUPABASE_KEY  = "sb_publishable_hD7nOJwuAuceBX3A2mu4kA_SljIMd7V";
 <div id="status"></div>
 
 <script>
-const DATA = {"Original":[{"name":"Préstamo 12M","principal":12000000,"disb":"2025-08-15","payments":[{"date":"2025-09-29","amount":840000},{"date":"2025-11-13","amount":840000},{"date":"2025-12-28","amount":840000},{"date":"2026-02-11","amount":840000},{"date":"2026-03-28","amount":840000},{"date":"2026-05-12","amount":840000},{"date":"2026-06-26","amount":840000},{"date":"2026-08-10","amount":840000},{"date":"2026-09-24","amount":840000},{"date":"2026-11-08","amount":840000},{"date":"2026-12-23","amount":840000}]},{"name":"Préstamo 7M","principal":7000000,"disb":"2025-08-15","payments":[{"date":"2025-09-29","amount":490000},{"date":"2025-11-13","amount":490000},{"date":"2025-12-28","amount":490000},{"date":"2026-02-11","amount":490000},{"date":"2026-03-28","amount":490000},{"date":"2026-05-12","amount":490000},{"date":"2026-06-26","amount":490000},{"date":"2026-08-10","amount":490000},{"date":"2026-09-24","amount":490000},{"date":"2026-11-08","amount":490000},{"date":"2026-12-23","amount":490000}]},{"name":"Préstamo 55M","principal":55000000,"disb":"2025-08-26","payments":[{"date":"2025-10-10","amount":3850000},{"date":"2025-11-24","amount":3850000},{"date":"2026-01-08","amount":3850000},{"date":"2026-02-22","amount":3850000},{"date":"2026-04-08","amount":3850000},{"date":"2026-05-23","amount":3850000},{"date":"2026-07-07","amount":3850000},{"date":"2026-08-21","amount":3850000},{"date":"2026-10-05","amount":3850000},{"date":"2026-11-19","amount":3850000}]},{"name":"Préstamo 30M","principal":30000000,"disb":"2026-05-06","payments":[{"date":"2026-06-21","amount":1650000},{"date":"2026-08-06","amount":1650000},{"date":"2026-09-21","amount":1650000},{"date":"2026-11-06","amount":1650000},{"date":"2026-12-22","amount":1650000}]}],"Alejandro":[{"name":"Juan P","principal":12000000,"disb":"2025-08-15","payments":[{"date":"2025-09-29","amount":360000},{"date":"2025-11-13","amount":360000},{"date":"2025-12-28","amount":360000},{"date":"2026-02-11","amount":360000},{"date":"2026-03-28","amount":360000},{"date":"2026-05-12","amount":360000},{"date":"2026-06-26","amount":360000},{"date":"2026-08-10","amount":360000},{"date":"2026-09-24","amount":360000},{"date":"2026-11-08","amount":360000},{"date":"2026-12-23","amount":360000}]},{"name":"Jorge","principal":7000000,"disb":"2025-08-15","payments":[{"date":"2025-09-29","amount":210000},{"date":"2025-11-13","amount":210000},{"date":"2025-12-28","amount":210000},{"date":"2026-02-11","amount":210000},{"date":"2026-03-28","amount":210000},{"date":"2026-05-12","amount":210000},{"date":"2026-06-26","amount":210000},{"date":"2026-08-10","amount":210000},{"date":"2026-09-24","amount":210000},{"date":"2026-11-08","amount":210000},{"date":"2026-12-23","amount":210000}]},{"name":"Joaquis","principal":55000000,"disb":"2025-08-26","payments":[{"date":"2025-10-10","amount":1650000},{"date":"2025-11-24","amount":1650000},{"date":"2026-01-08","amount":1650000},{"date":"2026-02-22","amount":1650000},{"date":"2026-04-08","amount":1650000},{"date":"2026-05-23","amount":1650000},{"date":"2026-07-07","amount":1650000},{"date":"2026-08-21","amount":1650000},{"date":"2026-10-05","amount":1650000},{"date":"2026-11-19","amount":1650000}]},{"name":"Tata","principal":55000000,"disb":"2025-08-26","payments":[{"date":"2025-10-10","amount":275000},{"date":"2025-11-24","amount":275000},{"date":"2026-01-08","amount":275000},{"date":"2026-02-22","amount":275000},{"date":"2026-04-08","amount":275000},{"date":"2026-05-23","amount":275000},{"date":"2026-07-07","amount":275000},{"date":"2026-08-21","amount":275000},{"date":"2026-10-05","amount":275000},{"date":"2026-11-19","amount":275000}]},{"name":"Préstamo 30M","principal":30000000,"disb":"2026-05-06","payments":[{"date":"2026-06-21","amount":1650000},{"date":"2026-08-06","amount":1650000},{"date":"2026-09-21","amount":1650000},{"date":"2026-11-06","amount":1650000},{"date":"2026-12-22","amount":1650000}]}],"Felipe":[{"name":"Préstamo 12M","principal":12000000,"disb":"2025-08-15","payments":[{"date":"2025-09-29","amount":480000},{"date":"2025-11-13","amount":480000},{"date":"2025-12-28","amount":480000},{"date":"2026-02-11","amount":480000},{"date":"2026-03-28","amount":480000},{"date":"2026-05-12","amount":480000},{"date":"2026-06-26","amount":480000},{"date":"2026-08-10","amount":480000},{"date":"2026-09-24","amount":480000},{"date":"2026-11-08","amount":480000},{"date":"2026-12-23","amount":840000}]},{"name":"Préstamo 7M","principal":7000000,"disb":"2025-08-15","payments":[{"date":"2025-09-29","amount":280000},{"date":"2025-11-13","amount":280000},{"date":"2025-12-28","amount":280000},{"date":"2026-02-11","amount":280000},{"date":"2026-03-28","amount":280000},{"date":"2026-05-12","amount":280000},{"date":"2026-06-26","amount":280000},{"date":"2026-08-10","amount":210000},{"date":"2026-09-24","amount":280000},{"date":"2026-11-08","amount":280000},{"date":"2026-12-23","amount":280000}]},{"name":"Préstamo 55M","principal":55000000,"disb":"2025-08-26","payments":[{"date":"2025-10-10","amount":1925000},{"date":"2025-11-24","amount":1925000},{"date":"2026-01-08","amount":1925000},{"date":"2026-02-22","amount":1925000},{"date":"2026-04-08","amount":1925000},{"date":"2026-05-23","amount":1925000},{"date":"2026-07-07","amount":1925000},{"date":"2026-08-21","amount":1925000},{"date":"2026-10-05","amount":1925000},{"date":"2026-11-19","amount":1925000}]},{"name":"Préstamo 30M","principal":30000000,"disb":"2026-05-06","payments":[{"date":"2026-06-21","amount":1650000},{"date":"2026-08-06","amount":1650000},{"date":"2026-09-21","amount":1650000},{"date":"2026-11-06","amount":1650000},{"date":"2026-12-22","amount":1650000}]}]};
+const DATA = {"Original": [{"name": "Préstamo 12M", "principal": 12000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 840000}, {"date": "2025-11-13", "amount": 840000}, {"date": "2025-12-28", "amount": 840000}, {"date": "2026-02-11", "amount": 840000}, {"date": "2026-03-28", "amount": 840000}, {"date": "2026-05-12", "amount": 840000}, {"date": "2026-06-26", "amount": 840000}, {"date": "2026-08-10", "amount": 840000}, {"date": "2026-09-24", "amount": 840000}, {"date": "2026-11-08", "amount": 840000}, {"date": "2026-12-23", "amount": 840000}]}, {"name": "Préstamo 7M", "principal": 7000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 490000}, {"date": "2025-11-13", "amount": 490000}, {"date": "2025-12-28", "amount": 490000}, {"date": "2026-02-11", "amount": 490000}, {"date": "2026-03-28", "amount": 490000}, {"date": "2026-05-12", "amount": 490000}, {"date": "2026-06-26", "amount": 490000}, {"date": "2026-08-10", "amount": 490000}, {"date": "2026-09-24", "amount": 490000}, {"date": "2026-11-08", "amount": 490000}, {"date": "2026-12-23", "amount": 490000}]}, {"name": "Préstamo 55M", "principal": 55000000, "disb": "2025-08-26", "payments": [{"date": "2025-10-10", "amount": 3850000}, {"date": "2025-11-24", "amount": 3850000}, {"date": "2026-01-08", "amount": 3850000}, {"date": "2026-02-22", "amount": 3850000}, {"date": "2026-04-08", "amount": 3850000}, {"date": "2026-05-23", "amount": 3850000}, {"date": "2026-07-07", "amount": 3850000}, {"date": "2026-08-21", "amount": 3850000}, {"date": "2026-10-05", "amount": 3850000}, {"date": "2026-11-19", "amount": 3850000}]}, {"name": "Préstamo 30M", "principal": 30000000, "disb": "2026-05-06", "payments": [{"date": "2026-06-21", "amount": 1650000}, {"date": "2026-08-06", "amount": 1650000}, {"date": "2026-09-21", "amount": 1650000}, {"date": "2026-11-06", "amount": 1650000}, {"date": "2026-12-22", "amount": 1650000}]}], "Alejandro": [{"name": "Juan P", "principal": 12000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 360000}, {"date": "2025-11-13", "amount": 360000}, {"date": "2025-12-28", "amount": 360000}, {"date": "2026-02-11", "amount": 360000}, {"date": "2026-03-28", "amount": 360000}, {"date": "2026-05-12", "amount": 360000}, {"date": "2026-06-26", "amount": 360000}, {"date": "2026-08-10", "amount": 360000}, {"date": "2026-09-24", "amount": 360000}, {"date": "2026-11-08", "amount": 360000}, {"date": "2026-12-23", "amount": 360000}]}, {"name": "Jorge", "principal": 7000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 210000}, {"date": "2025-11-13", "amount": 210000}, {"date": "2025-12-28", "amount": 210000}, {"date": "2026-02-11", "amount": 210000}, {"date": "2026-03-28", "amount": 210000}, {"date": "2026-05-12", "amount": 210000}, {"date": "2026-06-26", "amount": 210000}, {"date": "2026-08-10", "amount": 210000}, {"date": "2026-09-24", "amount": 210000}, {"date": "2026-11-08", "amount": 210000}, {"date": "2026-12-23", "amount": 210000}]}, {"name": "Joaquis", "principal": 55000000, "disb": "2025-08-26", "payments": [{"date": "2025-10-10", "amount": 1650000}, {"date": "2025-11-24", "amount": 1650000}, {"date": "2026-01-08", "amount": 1650000}, {"date": "2026-02-22", "amount": 1650000}, {"date": "2026-04-08", "amount": 1650000}, {"date": "2026-05-23", "amount": 1650000}, {"date": "2026-07-07", "amount": 1650000}, {"date": "2026-08-21", "amount": 1650000}, {"date": "2026-10-05", "amount": 1650000}, {"date": "2026-11-19", "amount": 1650000}]}, {"name": "Tata", "principal": 55000000, "disb": "2025-08-26", "payments": [{"date": "2025-10-10", "amount": 275000}, {"date": "2025-11-24", "amount": 275000}, {"date": "2026-01-08", "amount": 275000}, {"date": "2026-02-22", "amount": 275000}, {"date": "2026-04-08", "amount": 275000}, {"date": "2026-05-23", "amount": 275000}, {"date": "2026-07-07", "amount": 275000}, {"date": "2026-08-21", "amount": 275000}, {"date": "2026-10-05", "amount": 275000}, {"date": "2026-11-19", "amount": 275000}]}, {"name": "Préstamo 30M", "principal": 30000000, "disb": "2026-05-06", "payments": [{"date": "2026-06-21", "amount": 1650000}, {"date": "2026-08-06", "amount": 1650000}, {"date": "2026-09-21", "amount": 1650000}, {"date": "2026-11-06", "amount": 1650000}, {"date": "2026-12-22", "amount": 1650000}]}], "Felipe": [{"name": "Préstamo 12M", "principal": 12000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 480000}, {"date": "2025-11-13", "amount": 480000}, {"date": "2025-12-28", "amount": 480000}, {"date": "2026-02-11", "amount": 480000}, {"date": "2026-03-28", "amount": 480000}, {"date": "2026-05-12", "amount": 480000}, {"date": "2026-06-26", "amount": 480000}, {"date": "2026-08-10", "amount": 480000}, {"date": "2026-09-24", "amount": 480000}, {"date": "2026-11-08", "amount": 480000}, {"date": "2026-12-23", "amount": 840000}]}, {"name": "Préstamo 7M", "principal": 7000000, "disb": "2025-08-15", "payments": [{"date": "2025-09-29", "amount": 280000}, {"date": "2025-11-13", "amount": 280000}, {"date": "2025-12-28", "amount": 280000}, {"date": "2026-02-11", "amount": 280000}, {"date": "2026-03-28", "amount": 280000}, {"date": "2026-05-12", "amount": 280000}, {"date": "2026-06-26", "amount": 280000}, {"date": "2026-08-10", "amount": 210000}, {"date": "2026-09-24", "amount": 280000}, {"date": "2026-11-08", "amount": 280000}, {"date": "2026-12-23", "amount": 280000}]}, {"name": "Préstamo 55M", "principal": 55000000, "disb": "2025-08-26", "payments": [{"date": "2025-10-10", "amount": 1925000}, {"date": "2025-11-24", "amount": 1925000}, {"date": "2026-01-08", "amount": 1925000}, {"date": "2026-02-22", "amount": 1925000}, {"date": "2026-04-08", "amount": 1925000}, {"date": "2026-05-23", "amount": 1925000}, {"date": "2026-07-07", "amount": 1925000}, {"date": "2026-08-21", "amount": 1925000}, {"date": "2026-10-05", "amount": 1925000}, {"date": "2026-11-19", "amount": 1925000}]}, {"name": "Préstamo 30M", "principal": 30000000, "disb": "2026-05-06", "payments": [{"date": "2026-06-21", "amount": 1650000}, {"date": "2026-08-06", "amount": 1650000}, {"date": "2026-09-21", "amount": 1650000}, {"date": "2026-11-06", "amount": 1650000}, {"date": "2026-12-22", "amount": 1650000}]}]};
 let sb=null, state={}, current="Felipe";
 
 // ---------- gate ----------
@@ -312,6 +332,78 @@ document.getElementById('ovAction').onclick=async ()=>{
   if(sb&&rows.length){const {error}=await sb.from('registro_pagos').upsert(rows);toast(error?('Error: '+error.message):rows.length+' registros subidos ✓');}
   ov.style.display='none';render();
 };
+
+// ================= JARVIS =================
+(function(){
+  function norm(s){s=(s||'').toLowerCase();return s.replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ü/g,'u').replace(/ñ/g,'n');}
+  const ORD={primera:1,segunda:2,tercera:3,cuarta:4,quinta:5,sexta:6,septima:7,octava:8,novena:9,decima:10};
+  const ALIAS={juan:'Juan P',juanp:'Juan P',joaquin:'Joaquis',joaquis:'Joaquis',jorge:'Jorge',tata:'Tata'};
+  function findLoan(tab,q){
+    const loans=DATA[tab];
+    for(let i=0;i<loans.length;i++){const n=norm(loans[i].name);if(n.length>2&&q.indexOf(n)>=0)return i;}
+    for(const a in ALIAS){if(q.indexOf(a)>=0){for(let i=0;i<loans.length;i++)if(loans[i].name===ALIAS[a])return i;}}
+    const pm=q.match(/(\d+)\s*(m|millon)/);
+    if(pm){const v=parseInt(pm[1])*1000000;for(let i=0;i<loans.length;i++)if(loans[i].principal===v)return i;}
+    return -1;
+  }
+  function jsay(msg,ok){
+    const el=document.getElementById('jresp');if(el){el.textContent=msg;el.style.color=(ok===false)?'#ffd7d7':'#eaffea';}
+    try{const u=new SpeechSynthesisUtterance(msg);u.lang='es-ES';speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}
+  }
+  async function setPaid(tab,li,pi,pay){
+    const loan=DATA[tab][li],p=loan.payments[pi],id=pid(tab,li,pi);
+    if(pay){state[id]={paid:true,fecha:p.date,monto:p.amount};
+      if(sb)await sb.from('registro_pagos').upsert({id,tab,loan:loan.name,fecha_programada:p.date,valor_cuota:p.amount,paid:true,fecha_pago:p.date,monto:p.amount,updated_at:new Date().toISOString()});
+    }else{delete state[id];if(sb)await sb.from('registro_pagos').delete().eq('id',id);}
+  }
+  async function run(raw){
+    const q=norm(raw||'');if(!q.trim())return;
+    let tab=current;
+    if(/\boriginal\b/.test(q))tab='Original';else if(/\balejandro\b/.test(q))tab='Alejandro';else if(/\bfelipe\b/.test(q))tab='Felipe';
+    const allTabs=/(en todas|las tres|las 3|todas las pesta)/.test(q);
+    const undo=/(quita|despag|desmarca|pendiente|anula|borra el pago|desmarcar)/.test(q);
+    const wantPay=/(pag|abon|cancel|recib|marca|listo|ya me)/.test(q)&&!undo;
+    // marcar todas las vencidas del tab
+    if(/vencid/.test(q)&&/todas/.test(q)&&!/cuota/.test(q)){
+      for(let i=0;i<DATA[tab].length;i++)await markPast(tab,i);
+      jsay('Listo, marqué todas las cuotas vencidas de '+tab+' como pagadas.');return;
+    }
+    let num=null;
+    const mn=q.match(/cuota\s*#?\s*(\d+)/)||q.match(/\bla\s+(\d+)\b/)||q.match(/\bnumero\s+(\d+)/)||q.match(/#\s*(\d+)/);
+    if(mn)num=parseInt(mn[1]);
+    if(num==null)for(const w in ORD)if(q.indexOf(w)>=0){num=ORD[w];break;}
+    if(!wantPay&&!undo){jsay('No entendí la acción. Prueba: "marca la cuota 3 de Juan P como pagada".',false);return;}
+    const li=findLoan(tab,q);
+    if(li<0){jsay('No encontré ese préstamo en '+tab+'. Nombres: '+DATA[tab].map(l=>l.name).join(', ')+'.',false);return;}
+    const loan=DATA[tab][li];
+    if(!num||num<1||num>loan.payments.length){jsay('Dime el número de cuota (1 a '+loan.payments.length+') para '+loan.name+'.',false);return;}
+    const pi=num-1,p=loan.payments[pi];
+    if(allTabs){
+      const done=[];
+      for(const tb of ['Original','Alejandro','Felipe']){
+        let idx=-1;for(let i=0;i<DATA[tb].length;i++)if(DATA[tb][i].principal===loan.principal){idx=i;break;}
+        if(idx<0||num>DATA[tb][idx].payments.length){done.push(tb+': n/a');continue;}
+        await setPaid(tb,idx,pi,!undo);done.push(tb+' ✓');
+      }
+      render();jsay((undo?'Quité':'Marqué')+' la cuota '+num+' del préstamo '+loan.name+' en las 3 pestañas ('+done.join(', ')+').');return;
+    }
+    await setPaid(tab,li,pi,!undo);
+    current=tab;render();
+    jsay((undo?'Quité el pago de':'Marqué como pagada')+' la cuota '+num+' de '+loan.name+' ('+tab+') — '+fdate(p.date)+', '+fmt(p.amount)+'.');
+  }
+  const inp=document.getElementById('jinput'),send=document.getElementById('jsend'),mic=document.getElementById('jmic');
+  function go(){run(inp.value);}
+  if(send)send.onclick=go;
+  if(inp)inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR&&mic){
+    const rec=new SR();rec.lang='es-CO';rec.interimResults=false;rec.maxAlternatives=1;
+    mic.onclick=()=>{try{mic.classList.add('rec');rec.start();}catch(e){}};
+    rec.onresult=ev=>{const txt=ev.results[0][0].transcript;inp.value=txt;run(txt);};
+    rec.onend=()=>mic.classList.remove('rec');
+    rec.onerror=()=>{mic.classList.remove('rec');jsay('No pude escuchar. Revisa el permiso del micrófono en el navegador.',false);};
+  }else if(mic){mic.onclick=()=>jsay('La voz no está disponible en este navegador; escríbeme el comando.',false);}
+})();
 </script>
 </body>
 </html>
